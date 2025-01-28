@@ -23,7 +23,8 @@ def extract(incremental):
                     'schema': schema,
                     'table_name': table_name,
                     'incremental': incremental
-                }
+                },
+                outlets=[Dataset(f"s3://pacbikes-db/{schema}/{table_name}/*.csv")]
             )
             
             current_task
@@ -36,7 +37,8 @@ def extract(incremental):
             python_callable=Extract._api,
             op_kwargs={
                 'url': url
-            }
+            },
+            outlets=[Dataset("s3://pacbikes-api/data.csv")]
         )
         
         current_task
@@ -45,7 +47,7 @@ def extract(incremental):
     api()
         
 @task_group()
-def load():
+def load(incremental):
     @task_group()
     def db():
         table_to_load = eval(Variable.get("PACBIKES_STAGING__table_to_extract_and_load"))
@@ -62,8 +64,10 @@ def load():
                     'sources': 'db',
                     'schema': schema,
                     'table_name': table_name,
-                    'primary_key': primary_key
-                }
+                    'primary_key': primary_key,
+                    'incremental': incremental
+                },
+                outlets=[Dataset(f'postgres://warehouse:5432/postgres.pacbikes_staging.{table_name}')]
             )
             
             if previous_task:
@@ -80,8 +84,10 @@ def load():
                 'sources': 'api',
                 'schema': 'staging',
                 'table_name': 'currency',
-                'primary_key': 'currencycode'
-            }
+                'primary_key': 'currencycode',
+                'incremental': incremental
+            },
+            outlets=[Dataset('postgres://warehouse:5432/postgres.pacbikes_staging.currency')]
         )
         
         current_task

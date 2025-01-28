@@ -1,169 +1,94 @@
 {
     "PACBIKES_API_URL": "https://api-currency-five.vercel.app/api/currencydata",
-    "PACBIKES_INCREMENTAL_MODE": "True",
-    "PACBIKES_STAGING__table_to_extract": "[\r\n        ['person', 'person'],\r\n        ['humanresources', 'employee'],\r\n        ['production', 'product'],\r\n        ['purchasing', 'shipmethod'],\r\n        ['sales', 'currencyrate'],\r\n        ['sales', 'salesreason'],\r\n        ['sales', 'salesterritory'],\r\n        ['sales', 'specialoffer'],\r\n        ['sales', 'salesperson'],\r\n        ['sales', 'store'],\r\n        ['sales', 'customer'],\r\n        ['sales', 'specialofferproduct'],\r\n        ['sales', 'salespersonquotahistory'],\r\n        ['sales', 'salesterritoryhistory'],\r\n        ['sales', 'shoppingcartitem'],\r\n        ['sales', 'salesorderheader'],\r\n        ['sales', 'salesorderdetail'],\r\n        ['sales', 'salesorderheadersalesreason']\r\n    ]",
+    "PACBIKES_INCREMENTAL_MODE": "False",
     "PACBIKES_STAGING__table_to_extract_and_load": {
-        "currencyrate": [
-            "sales",
-            "currencyrateid"
-        ],
-        "customer": [
-            "sales",
-            "customerid"
+        "person": [
+          "person",
+          "businessentityid"
         ],
         "employee": [
-            "humanresources",
-            "businessentityid"
-        ],
-        "person": [
-            "person",
-            "businessentityid"
+          "humanresources",
+          "businessentityid"
         ],
         "product": [
-            "production",
-            "productid"
-        ],
-        "salesorderdetail": [
-            "sales",
-            [
-                "salesorderid",
-                "salesorderdetailid"
-            ]
-        ],
-        "salesorderheader": [
-            "sales",
-            "salesorderid"
-        ],
-        "salesorderheadersalesreason": [
-            "sales",
-            [
-                "salesorderid",
-                "salesreasonid"
-            ]
-        ],
-        "salesperson": [
-            "sales",
-            "businessentityid"
-        ],
-        "salespersonquotahistory": [
-            "sales",
-            [
-                "businessentityid",
-                "quotadate"
-            ]
-        ],
-        "salesreason": [
-            "sales",
-            "salesreasonid"
-        ],
-        "salesterritory": [
-            "sales",
-            "territoryid"
-        ],
-        "salesterritoryhistory": [
-            "sales",
-            [
-                "businessentityid",
-                "territoryid",
-                "startdate"
-            ]
+          "production",
+          "productid"
         ],
         "shipmethod": [
-            "purchasing",
-            "shipmethodid"
+          "purchasing",
+          "shipmethodid"
         ],
-        "shoppingcartitem": [
-            "sales",
-            "shoppingcartitemid"
+        "currencyrate": [
+          "sales",
+          "currencyrateid"
+        ],
+        "salesreason": [
+          "sales",
+          "salesreasonid"
+        ],
+        "salesterritory": [
+          "sales",
+          "territoryid"
         ],
         "specialoffer": [
-            "sales",
-            "specialofferid"
+          "sales",
+          "specialofferid"
         ],
-        "specialofferproduct": [
-            "sales",
-            [
-                "specialofferid",
-                "productid"
-            ]
+        "salesperson": [
+          "sales",
+          "businessentityid"
         ],
         "store": [
-            "sales",
-            "businessentityid"
+          "sales",
+          "businessentityid"
+        ],
+        "customer": [
+          "sales",
+          "customerid"
+        ],
+        "specialofferproduct": [
+          "sales",
+          [
+            "specialofferid",
+            "productid"
+          ]
+        ],
+        "salespersonquotahistory": [
+          "sales",
+          [
+            "businessentityid",
+            "quotadate"
+          ]
+        ],
+        "salesterritoryhistory": [
+          "sales",
+          [
+            "businessentityid",
+            "territoryid",
+            "startdate"
+          ]
+        ],
+        "shoppingcartitem": [
+          "sales",
+          "shoppingcartitemid"
+        ],
+        "salesorderheader": [
+          "sales",
+          "salesorderid"
+        ],
+        "salesorderdetail": [
+          "sales",
+          [
+            "salesorderid",
+            "salesorderdetailid"
+          ]
+        ],
+        "salesorderheadersalesreason": [
+          "sales",
+          [
+            "salesorderid",
+            "salesreasonid"
+          ]
         ]
-    },
-    "PACBIKES_STAGING__table_to_load": {
-        "currencyrate": {
-            "primary_key": "currencyrateid",
-            "schema": "sales"
-        },
-        "customer": {
-            "primary_key": "customerid",
-            "schema": "sales"
-        },
-        "employee": {
-            "primary_key": "businessentityid",
-            "schema:": "humanresources"
-        },
-        "person": {
-            "primary_key": "businessentityid",
-            "schema": "person"
-        },
-        "product": {
-            "primary_key": "productid",
-            "schema": "production"
-        },
-        "salesorderdetail": {
-            "primary_key": "salesorderid",
-            "schema": "sales"
-        },
-        "salesorderheader": {
-            "primary_key": "salesorderid",
-            "schema": "sales"
-        },
-        "salesorderheadersalesreason": {
-            "primary_key": "salesorderid",
-            "schema": "sales"
-        },
-        "salesperson": {
-            "primary_key": "businessentityid",
-            "schema": "sales"
-        },
-        "salespersonquotahistory": {
-            "primary_key": "businessentityid",
-            "schema": "sales"
-        },
-        "salesreason": {
-            "primary_key": "salesreasonid",
-            "schema": "sales"
-        },
-        "salesterritory": {
-            "primary_key": "territoryid",
-            "schema": "sales"
-        },
-        "salesterritoryhistory": {
-            "primary_key": "businessentityid",
-            "schema": "sales"
-        },
-        "shipmethod": {
-            "primary_key": "shipmethodid",
-            "schema": "purchasing"
-        },
-        "shoppingcartitem": {
-            "primary_key": "shoppingcartitemid",
-            "schema": "sales"
-        },
-        "specialoffer": {
-            "primary_key": "specialofferid",
-            "schema": "sales"
-        },
-        "specialofferproduct": {
-            "primary_key": "specialofferid",
-            "schema": "sales"
-        },
-        "store": {
-            "primary_key": "businessentityid",
-            "schema": "sales"
-        }
     }
 }

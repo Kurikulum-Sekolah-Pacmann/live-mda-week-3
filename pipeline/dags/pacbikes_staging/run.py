@@ -14,6 +14,6 @@ def pacbickes_staging():
     incremental_mode = Variable.get('PACBIKES_INCREMENTAL_MODE')
     incremental_mode = eval(incremental_mode)
     
-    extract(incremental = incremental_mode)
+    extract(incremental = incremental_mode) >> load(incremental = incremental_mode)
 
 pacbickes_staging()
