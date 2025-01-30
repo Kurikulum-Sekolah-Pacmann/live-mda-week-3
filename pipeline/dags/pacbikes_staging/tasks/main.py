@@ -1,23 +1,32 @@
+from airflow.decorators import task_group
+from airflow.operators.python import PythonOperator
+from airflow.models import Variable
+from airflow.datasets import Dataset
+
 from pacbikes_staging.tasks.extract import Extract
 from pacbikes_staging.tasks.load import Load
 
-from airflow.decorators import task_group, task
-from airflow.operators.python import PythonOperator
-from airflow.models import Variable
-
-from airflow.datasets import Dataset
-
 @task_group()
-def extract(incremental):
+def extract(incremental: bool):
+    """
+    Task group to handle extraction of data from both database and API.
+    
+    Args:
+        incremental (bool): Flag to determine if the extraction is incremental or full.
+    """
+    
     @task_group()
     def db():
+        """
+        Task group to handle extraction of data from the database.
+        """
         table_to_extract = eval(Variable.get("PACBIKES_STAGING__table_to_extract_and_load"))
         
         for table_name, info in table_to_extract.items():
             schema = info[0]
             
             current_task = PythonOperator(
-                task_id = f"{schema}.{table_name}",
+                task_id=f"{schema}.{table_name}",
                 python_callable=Extract._db,
                 op_kwargs={
                     'schema': schema,
@@ -27,13 +36,17 @@ def extract(incremental):
                 outlets=[Dataset(f"s3://pacbikes-db/{schema}/{table_name}/*.csv")]
             )
             
-            current_task
-            
+            current_task  # Register the task
+
     @task_group()
     def api():
+        """
+        Task group to handle extraction of data from the API.
+        """
         url = Variable.get("PACBIKES_API_URL")
+        
         current_task = PythonOperator(
-            task_id = "currency_data",
+            task_id="currency_data",
             python_callable=Extract._api,
             op_kwargs={
                 'url': url
@@ -41,19 +54,28 @@ def extract(incremental):
             outlets=[Dataset("s3://pacbikes-api/data.csv")]
         )
         
-        current_task
-        
+        current_task  # Register the task
+
     if incremental:
         db()
-        
     else:
         db()
         api()
-        
+
 @task_group()
-def load(incremental):
+def load(incremental: bool):
+    """
+    Task group to handle loading of data into the staging area.
+    
+    Args:
+        incremental (bool): Flag to determine if the loading is incremental or full.
+    """
+    
     @task_group()
     def db():
+        """
+        Task group to handle loading of data from the database into the staging area.
+        """
         table_to_load = eval(Variable.get("PACBIKES_STAGING__table_to_extract_and_load"))
         previous_task = None
         
@@ -62,7 +84,7 @@ def load(incremental):
             primary_key = info[1]
             
             current_task = PythonOperator(
-                task_id = f"staging.{table_name}",
+                task_id=f"staging.{table_name}",
                 python_callable=Load.load,
                 op_kwargs={
                     'sources': 'db',
@@ -76,14 +98,17 @@ def load(incremental):
             )
             
             if previous_task:
-                previous_task >> current_task
+                previous_task >> current_task  # Set task dependency
                 
-            previous_task = current_task
-            
-    @task_group
+            previous_task = current_task  # Update previous task
+
+    @task_group()
     def api():
+        """
+        Task group to handle loading of data from the API into the staging area.
+        """
         current_task = PythonOperator(
-            task_id = "currency_data",
+            task_id="currency_data",
             python_callable=Load.load,
             op_kwargs={
                 'sources': 'api',
@@ -96,11 +121,10 @@ def load(incremental):
             trigger_rule='none_failed'
         )
         
-        current_task
-        
+        current_task  # Register the task
+
     if incremental:
         db()
-    
     else:
         db()
         api()
