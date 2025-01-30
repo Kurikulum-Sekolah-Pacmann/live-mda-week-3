@@ -43,8 +43,12 @@ def extract(incremental):
         
         current_task
         
-    db()
-    api()
+    if incremental:
+        db()
+        
+    else:
+        db()
+        api()
         
 @task_group()
 def load(incremental):
@@ -67,7 +71,8 @@ def load(incremental):
                     'primary_key': primary_key,
                     'incremental': incremental
                 },
-                outlets=[Dataset(f'postgres://warehouse:5432/postgres.pacbikes_staging.{table_name}')]
+                outlets=[Dataset(f'postgres://warehouse:5432/postgres.pacbikes_staging.{table_name}')],
+                trigger_rule='none_failed'
             )
             
             if previous_task:
@@ -87,10 +92,15 @@ def load(incremental):
                 'primary_key': 'currencycode',
                 'incremental': incremental
             },
-            outlets=[Dataset('postgres://warehouse:5432/postgres.pacbikes_staging.currency')]
+            outlets=[Dataset('postgres://warehouse:5432/postgres.pacbikes_staging.currency')],
+            trigger_rule='none_failed'
         )
         
         current_task
         
-    db()
-    api()
+    if incremental:
+        db()
+    
+    else:
+        db()
+        api()

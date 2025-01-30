@@ -36,14 +36,14 @@ class Extract:
 
             column_list = [desc[0] for desc in cursor.description]
             df = pd.DataFrame(result, columns=column_list)
-            
-            if df.empty:
-                raise AirflowSkipException(f"{table_name} doesn't have new data. Skipped...")
-            
+
             ti.xcom_push(
                 key = f"last_extract-{schema}.{table_name}", 
                 value = execution_date
             )
+            
+            if df.empty:
+                raise AirflowSkipException(f"Table '{schema}.{table_name}' doesn't have new data. Skipped...")
             
             S3.push(
                 aws_conn_id = 's3-conn',
