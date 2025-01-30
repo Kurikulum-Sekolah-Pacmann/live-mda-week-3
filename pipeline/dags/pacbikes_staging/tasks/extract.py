@@ -15,6 +15,7 @@ class Extract:
             execution_date = ti.execution_date
             tz = pytz.timezone('Asia/Jakarta')
             execution_date = execution_date.astimezone(tz)
+            data_date = (pd.to_datetime(execution_date) - timedelta(days=1)).strftime("%Y-%m-%d")
             
             pg_hook = PostgresHook(postgres_conn_id='pacbikes-db')
             connection = pg_hook.get_conn()
@@ -22,8 +23,8 @@ class Extract:
 
             extract_query = f"SELECT * FROM {schema}.{table_name}"
             if incremental:
-                extract_query += f" WHERE modifieddate::DATE = '{execution_date}'::DATE - INTERVAL '1 DAY';"                
-                object_name = f"pacbikes-db/{schema}/{table_name}/{(pd.to_datetime(execution_date) - timedelta(days=1)).strftime("%Y-%m-%d")}.csv"
+                extract_query += f" WHERE modifieddate::DATE = '{data_date}'::DATE;"                
+                object_name = f"pacbikes-db/{schema}/{table_name}/{data_date}.csv"
             
             else:
                 object_name = f"pacbikes-db/{schema}/{table_name}/full_data.csv"
@@ -37,20 +38,32 @@ class Extract:
             column_list = [desc[0] for desc in cursor.description]
             df = pd.DataFrame(result, columns=column_list)
 
-            ti.xcom_push(
-                key = f"last_extract-{schema}.{table_name}", 
-                value = execution_date
-            )
             
             if df.empty:
+                ti.xcom_push(
+                    key = f"extract_info-{schema}.{table_name}", 
+                    value = {
+                        "status": "skipped",
+                        "data_date":data_date
+                    }
+                )
                 raise AirflowSkipException(f"Table '{schema}.{table_name}' doesn't have new data. Skipped...")
             
-            S3.push(
-                aws_conn_id = 's3-conn',
-                bucket_name = 'pacbikes',
-                key = object_name,
-                string_data = df.to_csv(index=False)
-            )
+            else:
+                ti.xcom_push(
+                    key = f"extract_info-{schema}.{table_name}", 
+                    value = {
+                        "status": "success",
+                        "data_date":data_date
+                    }
+                )            
+                
+                S3.push(
+                    aws_conn_id = 's3-conn',
+                    bucket_name = 'pacbikes',
+                    key = object_name,
+                    string_data = df.to_csv(index=False)
+                )
             
         except AirflowSkipException as e:
             raise e

@@ -1,6 +1,6 @@
 {
     "PACBIKES_API_URL": "https://api-currency-five.vercel.app/api/currencydata",
-    "PACBIKES_INCREMENTAL_MODE": "False",
+    "PACBIKES_STAGING_INCREMENTAL_MODE": "False",
     "PACBIKES_WAREHOUSE_INIT": "True",
     "PACBIKES_STAGING__table_to_extract_and_load": {
         "person": [

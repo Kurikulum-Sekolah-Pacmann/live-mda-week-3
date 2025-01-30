@@ -12,7 +12,7 @@ from airflow.operators.trigger_dagrun import TriggerDagRunOperator
     catchup=False
 )
 def pacbickes_staging():
-    incremental_mode = Variable.get('PACBIKES_INCREMENTAL_MODE')
+    incremental_mode = Variable.get('PACBIKES_STAGING_INCREMENTAL_MODE')
     incremental_mode = eval(incremental_mode)
     
     trigger_pacbikes_warehouse = TriggerDagRunOperator(

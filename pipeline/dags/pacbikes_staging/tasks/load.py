@@ -1,5 +1,5 @@
 from helper.s3 import S3
-from airflow.exceptions import AirflowException, AirflowSkipException
+from airflow.exceptions import AirflowSkipException
 from pangres import upsert
 from sqlalchemy import create_engine
 from airflow.providers.postgres.hooks.postgres import PostgresHook
@@ -15,22 +15,28 @@ class Load:
         
         if sources == 'db':
             execution_date = ti.execution_date
-            last_extract = ti.xcom_pull(key=f"last_extract-{schema}.{table_name}")
+            extract_info = ti.xcom_pull(
+                key=f"extract_info-{schema}.{table_name}"
+            )
+            print(extract_info)
+            print(extract_info['data_date'])
             
-            if last_extract is None:
-                raise AirflowException(f"Last extract date for {schema}.{table_name} is not found")
+            if extract_info["status"] == "skipped":
+                raise AirflowSkipException(f"There is no new data for '{schema}.{table_name}'. Skipped...")
             
             if incremental:
-                key = f"pacbikes-db/{schema}/{table_name}/{(pd.to_datetime(execution_date) - timedelta(days=1)).strftime("%Y-%m-%d")}.csv"
+                key = f"pacbikes-db/{schema}/{table_name}/{extract_info["data_date"]}.csv"
                 
             else:
                 key = f"pacbikes-db/{schema}/{table_name}/full_data.csv"
+            
             
             df = S3.pull(
                 aws_conn_id='s3-conn',
                 bucket_name='pacbikes',
                 key = key
             )
+                
         else:
             df = S3.pull(
                 aws_conn_id='s3-conn',
