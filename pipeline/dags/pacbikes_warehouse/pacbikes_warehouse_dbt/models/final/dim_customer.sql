@@ -17,6 +17,6 @@ SELECT
     {{ dbt_date.now() }} as created_at,
     {{ dbt_date.now() }} as updated_at
 FROM {{source('pacbikes_staging', 'customer')}} as s
-join {{source('pacbikes_staging', 'person')}} as p on s.personid = p.businessentityid
-join {{ref("dim_sales_territory")}} as dsp on s.territoryid = dsp.nk_territory
-join {{ref("dim_store")}} as ds on s.storeid = ds.nk_store
+LEFT join {{source('pacbikes_staging', 'person')}} as p on s.personid = p.businessentityid
+LEFT join {{ref("dim_sales_territory")}} as dsp on s.territoryid = dsp.nk_territory
+LEFT join {{ref("dim_store")}} as ds on s.storeid = ds.nk_store

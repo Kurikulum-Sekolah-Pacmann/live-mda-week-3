@@ -33,7 +33,7 @@ SELECT
     {{ dbt_date.now() }} as created_at,
     {{ dbt_date.now() }} as updated_at
 FROM {{source('pacbikes_staging', 'salesperson')}} as ssp 
-join {{source('pacbikes_staging', 'employee')}} as e on ssp.businessentityid = e.businessentityid
-join {{source('pacbikes_staging', 'person')}} as p on e.businessentityid = p.businessentityid
-join stg_sales_territory as sst on ssp.territoryid = sst.territoryid
-join {{ref("dim_sales_territory")}} as dst on sst.territoryid = dst.nk_territory
+LEFT join {{source('pacbikes_staging', 'employee')}} as e on ssp.businessentityid = e.businessentityid
+LEFT join {{source('pacbikes_staging', 'person')}} as p on e.businessentityid = p.businessentityid
+LEFT join stg_sales_territory as sst on ssp.territoryid = sst.territoryid
+LEFT join {{ref("dim_sales_territory")}} as dst on sst.territoryid = dst.nk_territory

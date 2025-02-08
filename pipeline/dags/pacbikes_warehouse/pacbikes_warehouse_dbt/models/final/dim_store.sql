@@ -8,4 +8,4 @@ SELECT
     {{ dbt_date.now() }} as created_at,
     {{ dbt_date.now() }} as updated_at
 FROM {{source('pacbikes_staging', 'store')}} as s
-join {{ref("dim_sales_person")}} as dsp on s.salespersonid = dsp.nk_sales_person
+LEFT join {{ref("dim_sales_person")}} as dsp on s.salespersonid = dsp.nk_sales_person
