@@ -3,6 +3,12 @@ from airflow.models import Variable
 from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 from pendulum import datetime
 from pacbikes_staging.tasks.main import extract, load
+from helper.callbacks.slack_notifier import slack_notifier
+
+# For slack alerting
+default_args = {
+    'on_failure_callback': slack_notifier
+}
 
 # Define the DAG with its properties
 @dag(
@@ -10,7 +16,8 @@ from pacbikes_staging.tasks.main import extract, load
     description='Extract data and load into staging area',
     start_date=datetime(2024, 9, 1, tz="Asia/Jakarta"),
     schedule="@daily",
-    catchup=False
+    catchup=False,
+    default_args=default_args
 )
 def pacbikes_staging():
     """

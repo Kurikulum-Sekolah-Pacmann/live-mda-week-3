@@ -10,17 +10,9 @@ The pipeline is structured to move data from raw data sources to a clean and str
 ## Project Structure
 
 ```
-root
-├── setup.sh
+.
 ├── pipeline
 │   └── dags
-│        ├── pacbikes_staging
-│        │    ├── run.py
-│        │    ├── tasks/
-│        ├── pacbikes_warehouse
-│        │    ├── run.py
-│        │    ├── pacbikes_warehouse_dbt/
-│        ├── helper
 ├── setup
 │    ├── sources
 │    ├── airflow
@@ -36,8 +28,13 @@ root
 ### 1. **Airflow DAGs**
 Located under `pipeline/dags/`, the Airflow DAGs orchestrate the entire data pipeline.
 
-- **pacbikes_staging:** Handles initial data ingestion and staging transformations, converting raw data into a usable form for downstream processing.
-- **pacbikes_warehouse:** Performs complex transformations and data enrichment using DBT models, eventually loading data into warehouse tables.
+- **pacbikes_staging:** 
+  - Handles initial or incrementally data ingestion and staging transformations
+  - Converting raw data into a usable form for downstream processing.
+  - Trigger **pacbikes_warehouse** dags.
+- **pacbikes_warehouse:** 
+  - Performs complex transformations and data enrichment using DBT models.
+  - Eventually loading data into warehouse tables.
 
 ### 2. **Tasks (Staging)**
 
@@ -46,6 +43,7 @@ Found under `pipeline/dags/pacbikes_staging/tasks/`:
 - **extract.py:** Extracts data from external sources, such as APIs, databases, or flat files. The extraction process includes connection handling and data retrieval.
 - **load.py:** Loads extracted and transformed data into the staging area within the data warehouse.
 - **main.py:** Orchestrates the task flow by defining dependencies and logic for running individual tasks within the staging process.
+- **run.py:** Defines and triggers the DAG for the stagings stage.
 
 ### 3. **Tasks (Warehouse)**
 

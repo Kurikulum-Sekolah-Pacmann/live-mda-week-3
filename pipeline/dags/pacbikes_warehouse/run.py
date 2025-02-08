@@ -1,13 +1,18 @@
 from airflow.decorators import dag, task
 from airflow.models import Variable
-
 from cosmos import DbtTaskGroup
 from cosmos.config import ProjectConfig, ProfileConfig, RenderConfig
 from cosmos.profiles.postgres import PostgresUserPasswordProfileMapping
 from cosmos.constants import TestBehavior
-
 from pendulum import datetime
+from helper.callbacks.slack_notifier import slack_notifier
 import os
+
+
+# For slack alerting
+default_args = {
+    'on_failure_callback': slack_notifier
+}
 
 # Define the path to the DBT project
 DBT_PROJECT_PATH = f"{os.environ['AIRFLOW_HOME']}/dags/pacbikes_warehouse/pacbikes_warehouse_dbt"
@@ -17,7 +22,8 @@ DBT_PROJECT_PATH = f"{os.environ['AIRFLOW_HOME']}/dags/pacbikes_warehouse/pacbik
     description='Transform data into warehouse',
     start_date=datetime(2024, 9, 1, tz="Asia/Jakarta"),
     schedule=None,
-    catchup=False
+    catchup=False,
+    default_args=default_args
 )
 def pacbikes_warehouse():
     """

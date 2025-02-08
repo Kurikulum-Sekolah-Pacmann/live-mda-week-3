@@ -21,8 +21,8 @@ def slack_notifier(context):
             *Traceback*: ```{traceback}```
             """
     slack_webhook_task = SlackWebhookOperator(
-        slack_webhook_conn_id='slack_notifier',
+        slack_webhook_conn_id='slack_conn',
         task_id='slack_notification',
         message=slack_msg,
-        channel="airflow-notifications")
+        channel="materi")
     slack_webhook_task.execute(context=context)

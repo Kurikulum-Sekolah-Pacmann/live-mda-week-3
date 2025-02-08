@@ -1,6 +1,6 @@
 pacbikes-api:
   conn_type: http
-  description: ''
+  description: Pacbikes data store
   extra: ''
   host: https://api-currency-five.vercel.app/api/currencydata
   login: ''
@@ -9,8 +9,8 @@ pacbikes-api:
   schema: ''
 pacbikes-db:
   conn_type: postgres
-  description: ''
-  extra: '{}'
+  description: Pacbikes data source
+  extra: ''
   host: sources
   login: postgres
   password: postgres
@@ -18,11 +18,20 @@ pacbikes-db:
   schema: postgres
 s3-conn:
   conn_type: aws
-  description: ''
+  description: Koneksi ke minio / s3 (data lake)
   extra: '{"endpoint_url": "http://minio:9000"}'
   host: ''
   login: minio
   password: minio123
+  port: null
+  schema: ''
+slack_conn:
+  conn_type: slack
+  description: Alerting
+  extra: '{"timeout": null}'
+  host: ''
+  login: ''
+  password:                         # Fill the token here
   port: null
   schema: ''
 warehouse:
