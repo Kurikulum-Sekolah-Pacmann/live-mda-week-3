@@ -31,7 +31,7 @@ slack_conn:
   extra: '{"timeout": null}'
   host: ''
   login: ''
-  password: xoxb-8445709736049-8432951976563-CbQdPDaVCgRsWkb878bFQ5yX                        # Fill the token here
+  password:                         # Fill the token here
   port: null
   schema: ''
 warehouse:
