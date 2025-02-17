@@ -24,3 +24,7 @@ docker compose -f ./setup/sources/docker-compose.yml up --build --detach --force
 # Start data warehouse services
 docker compose -f ./setup/warehouse/docker-compose.yml down -v
 docker compose -f setup/warehouse/docker-compose.yml up --build --detach --force-recreate
+
+# Start metabase service
+docker compose -f ./setup/metabase/docker-compose.yml down -v
+docker compose -f setup/metabase/docker-compose.yml up --build --detach --force-recreate

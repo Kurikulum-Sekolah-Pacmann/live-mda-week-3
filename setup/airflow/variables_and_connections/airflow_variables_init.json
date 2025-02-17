@@ -91,5 +91,23 @@
             "salesreasonid"
           ]
         ]
-    }
+    },
+    "PACBIKES_VALIDATION_INIT": "True",
+    "TABLE_LIST":[
+      {"schema": "final", "table": "dim_currency", "date_columns": ["modified_date", "created_at", "updated_at"], "unique_column": "currency_code"},
+      {"schema": "final", "table": "dim_date", "date_columns": ["date_actual", "first_day_of_week", "last_day_of_week", "first_day_of_month", "last_day_of_month", "first_day_of_quarter", "last_day_of_quarter", "first_day_of_year", "last_day_of_year"], "unique_column": "date_id"},
+      {"schema": "final", "table": "dim_product", "date_columns": ["modified_date", "created_at", "updated_at", "sell_start_date", "sell_end_date", "discontinued_date"], "unique_column": "product_id"},
+      {"schema": "final", "table": "dim_sales_reason", "date_columns": ["modified_date", "created_at", "updated_at"], "unique_column": "sales_reason_id"},
+      {"schema": "final", "table": "dim_sales_territory", "date_columns": ["modified_date", "created_at", "updated_at"], "unique_column": "sales_teritory_id"},
+      {"schema": "final", "table": "dim_ship_method", "date_columns": ["modified_date", "created_at", "updated_at"], "unique_column": "ship_method_id"},
+      {"schema": "final", "table": "dim_special_offer", "date_columns": ["modified_date", "created_at", "updated_at", "start_date", "end_date"], "unique_column": "special_offer_id"},
+      {"schema": "final", "table": "fact_order_reason", "date_columns": ["modified_date", "created_at", "updated_at"], "unique_column": "sales_order_reason_id"},
+      {"schema": "final", "table": "fact_sales_quota_history", "date_columns": ["modified_date", "created_at", "updated_at"], "unique_column": "sales_quota_history_id"},
+      {"schema": "final", "table": "fact_sales_territory_history", "date_columns": ["modified_date", "created_at", "updated_at"], "unique_column": "sales_quota_history_id"},
+      {"schema": "final", "table": "dim_currency_rate", "date_columns": ["currency_rate_date", "modified_date", "created_at", "updated_at"], "unique_column": "currency_rate_id"},
+      {"schema": "final", "table": "dim_sales_person", "date_columns": ["birth_date", "modified_date", "created_at", "updated_at"], "unique_column": "sales_person_id"},
+      {"schema": "final", "table": "dim_store", "date_columns": ["modified_date", "created_at", "updated_at"], "unique_column": "store_id"},
+      {"schema": "final", "table": "dim_customer", "date_columns": ["modified_date", "created_at", "updated_at"], "unique_column": "customer_id"},
+      {"schema": "final", "table": "fact_order", "date_columns": ["order_date", "due_date", "ship_date", "modified_date", "created_at", "updated_at"], "unique_column": "sales_order_id"}
+  ]   
 }
