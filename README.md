@@ -5,6 +5,8 @@ This project is designed to orchestrate and manage an end-to-end data pipeline f
 
 The pipeline is structured to move data from raw data sources to a clean and structured format within a data warehouse, while ensuring data integrity and providing monitoring and alerting capabilities.
 
+**his version of the project adds data validation processes and sets up BI tools**
+
 ---
 
 ## Project Structure
@@ -35,6 +37,8 @@ Located under `pipeline/dags/`, the Airflow DAGs orchestrate the entire data pip
 - **pacbikes_warehouse:** 
   - Performs complex transformations and data enrichment using DBT models.
   - Eventually loading data into warehouse tables.
+- **data validation:** 
+  - Validate data from warehouse tables and save the result to database
 
 ### 2. **Tasks (Staging)**
 

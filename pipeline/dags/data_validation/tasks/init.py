@@ -20,7 +20,8 @@ def create_validation_schema():
         type_validation VARCHAR(50),
         percentage DECIMAL(5,2),
         status VARCHAR(20),
-        error_message TEXT
+        error_message TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
     """
     with engine.connect() as connection:
