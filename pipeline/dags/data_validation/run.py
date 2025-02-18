@@ -60,7 +60,7 @@ def data_validation():
     init_check = check_is_validation_init()
 
     # Fetch the table details from Airflow variable
-    table_details = Variable.get("TABLES_LIST", deserialize_json=True)
+    table_details = Variable.get("TABLE_LIST", deserialize_json=True)
 
     # Start tasks
     init = validation_init()
