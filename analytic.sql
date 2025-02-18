@@ -52,7 +52,7 @@ LIMIT 10;
 -- Sales Performance
 SELECT 
     dsp.sales_person_id,
-    CONCAT(dsp.first_name, ' ', COALESCE(dsp.middle_name, ''), ' ', dsp.last_name) AS sales_person_name,
+    dsp.first_name AS sales_person_name,
     dst."name" AS territory_name,
     COUNT(DISTINCT fo.sales_order_id) AS total_orders,
     SUM(fo.total_due) AS total_sales,
