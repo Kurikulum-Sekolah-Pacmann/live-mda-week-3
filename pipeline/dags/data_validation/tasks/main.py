@@ -12,37 +12,58 @@ def main(table_details: dict):
     """
 
     @task()
-    def extract_data(table):
+    def extract_data(table, **context):
         """
         Extract data from the database.
         """
         schema = table['schema']
         table_name = table['table']
-        return Extract._db(schema, table_name)
+        df = Extract._db(schema, table_name)
+        
+        # Convert DataFrame to dictionary for XCom serialization
+        if df is not None:
+            return df.to_dict(orient='records')
+        return None
 
     @task()
-    def validate_data(data, table):
+    def validate_data(table, **context):
         """
         Validate the extracted data.
         """
-        if data is None:
-            return None  # Skip validation if extraction fails
+        # Get data from previous task
+        ti = context['task_instance']
+        data = ti.xcom_pull(task_ids=f"extract_{table['schema']}_{table['table']}")
 
+        if data is None:
+            return None
+
+        # Convert dictionary back to DataFrame
+        df = pd.DataFrame(data)
+        
         schema = table['schema']
         table_name = table['table']
         date_columns = table['date_columns']
         unique_column = table['unique_column']
 
-        validation_summary = Validate.run_validation(data, date_columns, unique_column, schema, table_name)
-        return validation_summary
+        validation_summary = Validate.run_validation(df, date_columns, unique_column, schema, table_name)
+        
+        if validation_summary is not None:
+            return validation_summary.to_dict(orient='records')
+        return None
 
     @task()
-    def load_data(validation_summary):
+    def load_data(validation_summary, **context):
         """
         Load the validation summary into the validation table.
         """
-        if validation_summary is not None and not validation_summary.empty:
-            Load.load(validation_summary, 'validation', 'data_validation')
+        ti = context['task_instance']
+        validation_summary = ti.xcom_pull(task_ids=f"validate_{table['schema']}_{table['table']}")
+
+        if validation_summary is not None:
+            # Convert dictionary back to DataFrame
+            df = pd.DataFrame(validation_summary)
+            if not df.empty:
+                Load.load(df, 'validation', 'data_validation')
         else:
             print("No validation errors found.")
 
