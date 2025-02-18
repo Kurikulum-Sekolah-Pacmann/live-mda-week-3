@@ -16,6 +16,7 @@ def extract_data(table, **context):
     
     if df is not None:
         # Convert DataFrame to dictionary for XCom serialization
+        df = df.applymap(lambda x: x.isoformat() if isinstance(x, pd.Timestamp) else x)
         return df.to_dict(orient='records')
     return None
 
