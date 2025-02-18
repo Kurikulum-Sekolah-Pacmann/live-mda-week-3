@@ -16,7 +16,7 @@ def create_validation_schema():
         validation_id SERIAL PRIMARY KEY,
         schema VARCHAR(100),
         table_name VARCHAR(100),
-        column VARCHAR(100),
+        "column" VARCHAR(100),
         type_validation VARCHAR(50),
         percentage DECIMAL(5,2),
         status VARCHAR(20),
