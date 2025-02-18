@@ -36,9 +36,9 @@ def data_validation():
         PACBIKES_VALIDATION_INIT = eval(PACBIKES_VALIDATION_INIT)
         
         if PACBIKES_VALIDATION_INIT:
-            return "validation"
-        else:
             return "validation_init"
+        else:
+            return "validation"
 
     @task()
     def validation_init():
