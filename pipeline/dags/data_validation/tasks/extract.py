@@ -23,6 +23,8 @@ class Extract:
             # Get task instance from context
             ti = context['task_instance']
             execution_date = context['execution_date']
+
+            execution_date = execution_date.isoformat()
   
             # Connect to PostgreSQL database
             pg_hook = PostgresHook(postgres_conn_id='warehouse')
