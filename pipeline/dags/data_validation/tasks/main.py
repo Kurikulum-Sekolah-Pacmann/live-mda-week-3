@@ -57,7 +57,7 @@ def load_data(table, **context):
         # Convert dictionary back to DataFrame
         df = pd.DataFrame(validation_summary)
         if not df.empty:
-            Load.load(df, 'validation', 'data_validation')
+            Load.load(df, 'validation', 'data_validation', **context)
     else:
         print("No validation errors found.")
 
