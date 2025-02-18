@@ -9,7 +9,7 @@ class Load:
     """
     
     @staticmethod
-    def load(data: pd.DataFrame, schema: str, table_name: str, **kwargs) -> None:
+    def load(data: pd.DataFrame, schema: str, table_name: str, **context) -> None:
         """
         Load validation summary data into the PostgreSQL validation table.
 
@@ -18,7 +18,8 @@ class Load:
         :param table_name: Table name in the database.
         :param kwargs: Additional keyword arguments.
         """
-        ti = kwargs['ti']
+        ti = context['task_instance']
+        execution_date = context['execution_date']
         extract_info = ti.xcom_pull(key=f"extract_info-{schema}.{table_name}")
         
         # Skip if no new data
