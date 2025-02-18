@@ -37,7 +37,7 @@ class Load:
 
 
         # Insert data into the validation table
-        data.to_sql(table_name='data_validation', con=engine, schema=schema, if_exists='append', index=False)
+        data.to_sql('data_validation', con=engine, schema=schema, if_exists='append', index=False)
 
         # Dispose the engine
         engine.dispose()
