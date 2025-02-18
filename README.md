@@ -1,11 +1,11 @@
 # PacBikes Data Pipeline Project
+**This version of the project adds data validation processes and sets up BI tools**
 
 ## Overview
 This project is designed to orchestrate and manage an end-to-end data pipeline for PacBikes. The project involves extracting, transforming, and loading data using Apache Airflow, DBT (Data Build Tool), and supporting components such as S3, Docker, and a data warehouse.
 
 The pipeline is structured to move data from raw data sources to a clean and structured format within a data warehouse, while ensuring data integrity and providing monitoring and alerting capabilities.
 
-**his version of the project adds data validation processes and sets up BI tools**
 
 ---
 
@@ -21,6 +21,7 @@ The pipeline is structured to move data from raw data sources to a clean and str
 │    ├── airflow-monitoring
 │    ├── data-lake
 │    ├── warehouse
+│    ├── **metabase**
 ```
 
 ---
@@ -37,8 +38,10 @@ Located under `pipeline/dags/`, the Airflow DAGs orchestrate the entire data pip
 - **pacbikes_warehouse:** 
   - Performs complex transformations and data enrichment using DBT models.
   - Eventually loading data into warehouse tables.
-- **data validation:** 
+```
+- data validation:
   - Validate data from warehouse tables and save the result to database
+```
 
 ### 2. **Tasks (Staging)**
 
@@ -66,6 +69,41 @@ Located under `pipeline/dags/pacbikes_warehouse/pacbikes_warehouse_dbt/`:
 - **packages.yml:** Manages external DBT dependencies.
 - **dbt_project.yml:** Defines DBT project settings and configurations.
 
+### **3. Data Validation Pipeline**  
+
+Located under `pipeline/dags/data_validation/`:  
+
+- **`run.py`** – Defines and triggers the DAG for the data validation stage. This DAG executes validation checks on extracted data before loading it into the data warehouse.  
+
+### **4. Validation Framework**  
+
+Located under `pipeline/dags/pacbikes_validation/validation_framework/`:  
+
+- **`extract.py`** – Extract All data from postgresql  
+- **`validate.py`** – Core validation logic for handling data quality checks such as missing values, date format consistency, uniqueness, and negative values.  
+- **`load.py`** – Loads validation results into the `validation.data_validation` table in PostgreSQL.  
+
+### **5. Validation Rules**  
+
+Validation rules are applied based on predefined thresholds:  
+
+- **Missing Values**:  
+  - *Threshold:* Bad if missing values ≥ 10%; otherwise, good.  
+  - *Metric:* Completeness Rate (%)  
+
+- **Date Format Consistency**:  
+  - *Threshold:* Bad if invalid date values ≥ 5%; otherwise, good.  
+  - *Metric:* Date Consistency Rate (%)  
+
+- **Uniqueness (Duplicates Check)**:  
+  - *Threshold:* Bad if duplicate records > 0%; otherwise, good.  
+  - *Metric:* Uniqueness Rate (%)  
+
+- **Negative Values**:  
+  - *Threshold:* Bad if negative values > 0%; otherwise, good.  
+  - *Metric:* Validity Rate (%)  
+
+
 ### 5. **Helper Functions**
 
 Located under `pipeline/dags/helper/`:
@@ -85,6 +123,7 @@ The `setup/` directory contains configuration files and Docker setups for deploy
 - **data-lake:** Sets up a scalable data lake for raw and semi-processed data storage.
 - **warehouse:** Defines a Postgres or equivalent data warehouse.
 - **airflow-monitoring:** Configures Prometheus and Grafana to monitor Airflow performance metrics.
+- **metabase:** Configures Metabase and Metadata Metabase.
 
 ---
 
