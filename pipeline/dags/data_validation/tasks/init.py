@@ -10,9 +10,9 @@ def create_validation_schema():
     postgres_uri = PostgresHook(postgres_conn_id='warehouse').get_uri()
     engine = create_engine(postgres_uri)
     sql = """
-    CREATE SCHEMA IF NOT EXISTS final;
+    CREATE SCHEMA IF NOT EXISTS data_validation;
     
-    CREATE TABLE IF NOT EXISTS final.data_validation (
+    CREATE TABLE IF NOT EXISTS data_validation.data_validation (
         validation_id SERIAL PRIMARY KEY,
         schema_name VARCHAR(100),
         table_name VARCHAR(100),
