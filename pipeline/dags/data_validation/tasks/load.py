@@ -35,12 +35,9 @@ class Load:
         postgres_uri = PostgresHook(postgres_conn_id='warehouse').get_uri()
         engine = create_engine(postgres_uri)
 
-        # Ensure the validation summary has the necessary columns (schema, table_name, column, type_validation, percentage, status)
-        data['schema'] = schema
-        data['table_name'] = table_name
 
         # Insert data into the validation table
-        data.to_sql('data_validation', con=engine, schema=schema, if_exists='append', index=False)
+        data.to_sql(table_name='data_validation', con=engine, schema=schema, if_exists='append', index=False)
 
         # Dispose the engine
         engine.dispose()
