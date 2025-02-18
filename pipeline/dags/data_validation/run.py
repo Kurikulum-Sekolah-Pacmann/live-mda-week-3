@@ -44,24 +44,20 @@ def data_validation():
     def validation_init():
         create_validation_schema()
 
-    @task()
-    def validation():
-        """
-        Call the main task group to extract, validate, and load data.
-        """
-        # Fetch the table details from Airflow variable
-        table_details = Variable.get("TABLE_LIST", deserialize_json=True)
-        main(table_details=table_details)
+    # Fetch the table details from Airflow Variables
+    table_details = Variable.get("TABLE_LIST", deserialize_json=True)
+
+    # Call task group directly in DAG (instead of inside a task)
+    validation_task_group = main(table_details)
+
+    end = EmptyOperator(task_id="end")
 
     init_check = check_is_validation_init()
     init = validation_init()
-    validation_task = validation()
-    end = EmptyOperator(task_id="end")
 
-    # Define task dependencies
-    init_check >> [init, validation_task]
-    init >> validation_task  # Ensure init runs before validation if needed
-    validation_task >> end
+    init_check >> [init, validation_task_group]
+    init >> validation_task_group  # Ensure init runs before validation if needed
+    validation_task_group >> end
 
 # Instantiate the DAG
 data_validation()
