@@ -29,7 +29,7 @@ class Load:
         # Check if validation data is empty
         if data.empty:
             print(f"No validation errors for '{schema}.{table_name}'. Nothing to load.")
-            return
+            raise AirflowSkipException(f"There is no data for '{schema}.{table_name}'. Skipped...")
 
         # Create PostgreSQL engine
         postgres_uri = PostgresHook(postgres_conn_id='warehouse').get_uri()
