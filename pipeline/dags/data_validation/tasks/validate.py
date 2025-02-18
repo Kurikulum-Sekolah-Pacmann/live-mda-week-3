@@ -14,6 +14,7 @@ class Validate:
         """
         Validate missing values in the data and return a summary result.
         """
+        result = []
         column_list = data.columns
         for col in column_list:
             missing_rows = data[col].isnull().sum()
@@ -21,14 +22,16 @@ class Validate:
             percentage_missing = (missing_rows / total_rows) * 100 if total_rows > 0 else 0
             status = 'Bad' if percentage_missing >= 10 else 'Good'
 
-            return pd.DataFrame([{
+            v_result =  {
                 'schema': schema,
                 'table_name': table,
                 'column': col, 
                 'type_validation': 'Missing Values',
                 'percentage': percentage_missing,
                 'status': status
-            }])
+            }
+            result.append(v_result)
+        return pd.DataFrame(result)
 
     @staticmethod
     def validate_date_format(data: pd.DataFrame, date_columns: list, schema: str, table: str) -> pd.DataFrame:
