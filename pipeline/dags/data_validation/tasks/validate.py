@@ -20,7 +20,7 @@ class Validate:
         total_rows = len(data)
         missing_rows = len(missing)
         percentage_missing = (missing_rows / total_rows) * 100
-        status = 'Failed' if missing_rows > 0 else 'Passed'
+        status = 'False' if missing_rows > 0 else 'True'
 
         return pd.DataFrame([{
             'schema': schema,
@@ -41,14 +41,14 @@ class Validate:
 
         for col in date_columns:
             invalid_date_count = 0
-            for idx, value in data[col].iteritems():
+            for idx, value in data[col].items():
                 try:
                     datetime.strptime(str(value), "%Y-%m-%d")  # Example format
                 except ValueError:
                     invalid_date_count += 1
 
             percentage_invalid_dates = (invalid_date_count / total_rows) * 100
-            status = 'Failed' if invalid_date_count > 0 else 'Passed'
+            status = 'False' if invalid_date_count > 0 else 'True'
             date_errors.append({
                 'schema': schema,
                 'table_name': table,
@@ -69,7 +69,7 @@ class Validate:
         total_rows = len(data)
         duplicate_count = len(duplicates)
         percentage_duplicates = (duplicate_count / total_rows) * 100
-        status = 'Failed' if duplicate_count > 0 else 'Passed'
+        status = 'False' if duplicate_count > 0 else 'True'
 
         return pd.DataFrame([{
             'schema': schema,
