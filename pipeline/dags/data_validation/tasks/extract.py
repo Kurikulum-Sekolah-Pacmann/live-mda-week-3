@@ -1,10 +1,8 @@
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.exceptions import AirflowSkipException, AirflowException
 from datetime import timedelta
-
 import pandas as pd
 import pytz
-import requests
 
 class Extract:
     """
@@ -12,19 +10,19 @@ class Extract:
     """
 
     @staticmethod
-    def _db(schema: str, table_name: str, **kwargs) -> None:
+    def _db(schema: str, table_name: str, **context) -> pd.DataFrame:
         """
         Extract data from a PostgreSQL database and push it to S3.
 
         Parameters:
         schema (str): The schema name.
         table_name (str): The table name.
-        kwargs: Additional keyword arguments.
+        context: Airflow context containing task instance and other metadata.
         """
         try:
-            # Get execution date and convert to Jakarta timezone
-            ti = kwargs['ti']
-            execution_date = ti.execution_date
+            # Get task instance from context
+            ti = context['task_instance']
+            execution_date = context['execution_date']
   
             # Connect to PostgreSQL database
             pg_hook = PostgresHook(postgres_conn_id='warehouse')
@@ -62,5 +60,5 @@ class Extract:
         except AirflowSkipException as e:
             raise e
         
-        except AirflowException as e:
+        except Exception as e:
             raise AirflowException(f"Error when extracting {schema}.{table_name} : {str(e)}")

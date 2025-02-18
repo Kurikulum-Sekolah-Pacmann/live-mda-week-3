@@ -11,7 +11,8 @@ def extract_data(table, **context):
     """
     schema = table['schema']
     table_name = table['table']
-    df = Extract._db(schema, table_name)
+    # Pass the context to Extract._db
+    df = Extract._db(schema, table_name, **context)
     
     if df is not None:
         # Convert DataFrame to dictionary for XCom serialization
@@ -69,21 +70,24 @@ def main(table_details: dict):
         extract_task = PythonOperator(
             task_id=f"extract_{table['schema']}_{table['table']}",
             python_callable=extract_data,
-            op_kwargs={'table': table}
+            op_kwargs={'table': table},
+            provide_context=True  # Ensure context is provided
         )
 
         # Validate the extracted data using PythonOperator
         validate_task = PythonOperator(
             task_id=f"validate_{table['schema']}_{table['table']}",
             python_callable=validate_data,
-            op_kwargs={'table': table}
+            op_kwargs={'table': table},
+            provide_context=True  # Ensure context is provided
         )
 
         # Load the validation results using PythonOperator
         load_task = PythonOperator(
             task_id=f"load_{table['schema']}_{table['table']}",
             python_callable=load_data,
-            op_kwargs={'table': table}
+            op_kwargs={'table': table},
+            provide_context=True  # Ensure context is provided
         )
 
         # Define task dependencies
