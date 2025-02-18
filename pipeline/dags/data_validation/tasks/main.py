@@ -1,26 +1,57 @@
 # data_validation/tasks/main.py
 
+from airflow.decorators import task_group
+from airflow.operators.python import PythonOperator
 from data_validation.tasks.extract import Extract
 from data_validation.tasks.validate import Validate
 from data_validation.tasks.load import Load
-import pandas as pd
 
-def main(extract_schema: str, extract_table_name: str, date_columns: list, unique_column: str, **kwargs):
+@task_group()
+def main(table_details: list, **kwargs):
     """
-    Main task to run extract, validate, and load functions.
+    Main task group to extract, validate, and load data for each table.
     """
 
-    # Step 1: Extract data
-    data = Extract._db(extract_schema, extract_table_name, **kwargs)
-    
-    if data is not None:
-        # Step 2: Run validations
-        validation_summary = Validate.run_validation(data, date_columns, unique_column, extract_schema, extract_table_name)
-        
-        if not validation_summary.empty:
-            # Step 3: Load validation summary to validation table
-            Load.load(validation_summary, 'validation', 'data_validation', **kwargs)
-        else:
-            print("No validation errors found.")
-    else:
-        print("No data extracted to validate.")
+    for table in table_details:
+        schema = table['schema']
+        table_name = table['table']
+        date_columns = table['date_columns']
+        unique_column = table['unique_column']
+
+        # Step 1: Extract Data
+        extract_task = PythonOperator(
+            task_id=f"extract_{schema}_{table_name}",
+            python_callable=Extract._db,
+            op_kwargs={
+                'schema': schema,
+                'table_name': table_name,
+                **kwargs
+            }
+        )
+
+        # Step 2: Validate Data
+        validate_task = PythonOperator(
+            task_id=f"validate_{schema}_{table_name}",
+            python_callable=Validate.run_validation,
+            op_kwargs={
+                'schema': schema,
+                'table_name': table_name,
+                'date_columns': date_columns,
+                'unique_column': unique_column,
+                **kwargs
+            }
+        )
+
+        # Step 3: Load Validation Results
+        load_task = PythonOperator(
+            task_id=f"load_{schema}_{table_name}",
+            python_callable=Load.load,
+            op_kwargs={
+                'schema': 'validation',
+                'table_name': 'data_validation',
+                **kwargs
+            }
+        )
+
+        # Define task dependencies
+        extract_task >> validate_task >> load_task

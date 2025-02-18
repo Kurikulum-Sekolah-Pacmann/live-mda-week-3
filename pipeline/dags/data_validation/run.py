@@ -45,29 +45,20 @@ def data_validation():
         create_validation_schema()
 
     @task()
-    def validation(table_details):
+    def validation():
         """
-        Loop through the table list and run extract, validate, and load for each.
+        Call the main task group to extract, validate, and load data.
         """
-        for table in table_details:
-            schema = table['schema']
-            table_name = table['table']
-            date_columns = table['date_columns']
-            unique_column = table['unique_column']
-            
-            main(schema, table_name, date_columns, unique_column)
+        # Fetch the table details from Airflow variable
+        table_details = Variable.get("TABLE_LIST", deserialize_json=True)
+        main(table_details=table_details)
 
     init_check = check_is_validation_init()
-
-    # Fetch the table details from Airflow variable
-    table_details = Variable.get("TABLE_LIST", deserialize_json=True)
-
-    # Start tasks
     init = validation_init()
-    validation_task = validation(table_details)
-
+    validation_task = validation()
     end = EmptyOperator(task_id="end")
 
+    # Define task dependencies
     init_check >> [init, validation_task]
     init >> validation_task  # Ensure init runs before validation if needed
     validation_task >> end
