@@ -32,17 +32,23 @@ class Validate:
     def validate_date_format(data: pd.DataFrame, date_columns: list, schema: str, table: str) -> pd.DataFrame:
         """
         Validate the date format for the given columns and return a summary result.
+        Excludes NULL values from the calculation.
         """
         date_errors = []
-        total_rows = len(data)
-
+        
         for col in date_columns:
-            invalid_date_count = sum(
-                not isinstance(value, pd.Timestamp) and not pd.to_datetime(value, errors='coerce')
-                for value in data[col]
-            )
+            valid_values = data[col].dropna()  # Exclude null values
+            total_valid_rows = len(valid_values)
 
-            percentage_invalid_dates = (invalid_date_count / total_rows) * 100 if total_rows > 0 else 0
+            if total_valid_rows == 0:
+                percentage_invalid_dates = 0
+            else:
+                invalid_date_count = sum(
+                    not isinstance(value, pd.Timestamp) and pd.to_datetime(value, errors='coerce') is pd.NaT
+                    for value in valid_values
+                )
+                percentage_invalid_dates = (invalid_date_count / total_valid_rows) * 100
+
             status = 'Bad' if percentage_invalid_dates >= 5 else 'Good'
 
             date_errors.append({
