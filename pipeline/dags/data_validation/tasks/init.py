@@ -12,7 +12,7 @@ def create_validation_schema():
     sql = """
     CREATE SCHEMA IF NOT EXISTS final;
     
-    CREATE TABLE IF NOT EXISTS final.validation_table (
+    CREATE TABLE IF NOT EXISTS final.data_validation (
         validation_id SERIAL PRIMARY KEY,
         schema_name VARCHAR(100),
         table_name VARCHAR(100),
